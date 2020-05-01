@@ -1,43 +1,32 @@
 name: golang/static
 on: pull_request
-
 jobs:
-
   vet:
     name: vet
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: vet
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: vet
-        comment: false
-  
-  # TODO: Enable linters below one by one and fix issues with each
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: go mod download
+    - run: go vet ./core/...
   shadow:
-    name: Shadow
+    name: shadow
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - name: check
-        uses: grandcolline/golang-github-actions@v1.1.0
-        with:
-          run: shadow
-          comment: false
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: go get -v golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
+    - run: go mod download
+    - run: go vet -vettool=$HOME/go/bin/shadow ./core/...
   imports:
-    name: Imports
+    name: imports
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: check
-      uses: grandcolline/golang-github-actions@v1.1.0
-      with:
-        run: imports
-        comment: false
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+    - run: go get -v golang.org/x/tools/cmd/goimports
+    - run: d="$($HOME/go/bin/goimports -d ./core)" && if [ -n "$d" ]; then echo "goimports generated output:" ; echo "$d"; exit 1; fi
+  # TODO: Enable linters below one by one and fix issues with each
   # lint:
   #   name: Lint
   #   runs-on: ubuntu-latest
@@ -48,7 +37,6 @@ jobs:
   #     with:
   #       run: lint
   #       comment: false
-
   # staticcheck:
   #   name: StaticCheck
   #   runs-on: ubuntu-latest
@@ -59,18 +47,14 @@ jobs:
   #     with:
   #       run: staticcheck
   #       comment: false
-
   # errcheck:
-  #   name: Errcheck
+  #   name: imports
   #   runs-on: ubuntu-latest
   #   steps:
-  #   - uses: actions/checkout@master
-  #   - name: check
-  #     uses: grandcolline/golang-github-actions@v1.1.0
-  #     with:
-  #       run: errcheck
-  #       comment: false
-
+  #   - uses: actions/setup-go@v2
+  #   - uses: actions/checkout@v2
+  #   - run: go get -u github.com/kisielk/errcheck
+  #   - run: errcheck -ignore 'cltest:.*' -ignoretests -asserts -ignoregenerated ./... | grep -v internal
   # sec:
   #   name: Sec
   #   runs-on: ubuntu-latest
