@@ -8,7 +8,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
     - run: go mod download
-    - run: go vet ./core/...
+    - run: go vet ./...
   shadow:
     name: shadow
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
     - uses: actions/setup-go@v2
     - run: go get -v golang.org/x/tools/go/analysis/passes/shadow/cmd/shadow
     - run: go mod download
-    - run: go vet -vettool=$HOME/go/bin/shadow ./core/...
+    - run: go vet -vettool=$HOME/go/bin/shadow ./...
   imports:
     name: imports
     runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-go@v2
     - run: go get -v golang.org/x/tools/cmd/goimports
-    - run: d="$($HOME/go/bin/goimports -d ./core)" && if [ -n "$d" ]; then echo "goimports generated output:" ; echo "$d"; exit 1; fi
+    - run: d="$($HOME/go/bin/goimports -d ./)" && if [ -n "$d" ]; then echo "goimports generated output:" ; echo "$d"; exit 1; fi
   # TODO: Enable linters below one by one and fix issues with each
   # lint:
   #   name: Lint
