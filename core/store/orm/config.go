@@ -66,7 +66,7 @@ func newConfigWithViper(v *viper.Viper) *Config {
 		SecretGenerator: filePersistedSecretGenerator{},
 	}
 
-	if err := os.MkdirAll(config.RootDir(), os.FileMode(0700)); err != nil {
+	if err := utils.EnsureDirAndPerms(config.RootDir(), os.FileMode(0700)); err != nil {
 		logger.Fatalf(`Error creating root directory "%s": %+v`, config.RootDir(), err)
 	}
 
@@ -539,7 +539,8 @@ func (f filePersistedSecretGenerator) Generate(c Config) ([]byte, error) {
 	}
 	key := securecookie.GenerateRandomKey(32)
 	str := base64.StdEncoding.EncodeToString(key)
-	return key, ioutil.WriteFile(sessionPath, []byte(str), readWritePerms)
+	err := utils.WriteFileWithPerms(sessionPath, []byte(str), readWritePerms)
+	return key, err
 }
 
 func parseAddress(str string) (interface{}, error) {

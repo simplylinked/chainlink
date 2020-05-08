@@ -10,6 +10,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/pkg/errors"
+
+	"github.com/smartcontract/chainlink/core/utils"
 )
 
 // EncryptedSecretKey contains encrypted private key to be serialized to DB
@@ -105,7 +107,7 @@ func (e *EncryptedSecretKey) WriteToDisk(path string) error {
 		return errors.Wrapf(err, "while marshaling key to save to %s", path)
 	}
 	userReadWriteOtherNoAccess := os.FileMode(0600)
-	return ioutil.WriteFile(path, keyJSON, userReadWriteOtherNoAccess)
+	return utils.WriteFileWithPerms(path, keyJSON, userReadWriteOtherNoAccess)
 }
 
 // MarshalText renders k as a text string
