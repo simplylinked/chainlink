@@ -1,5 +1,5 @@
 name: golang/static
-on: pull_request
+on: [push, pull_request]  # push trigger just for test, should be remove before pr
 jobs:
   vet:
     name: vet
